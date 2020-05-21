@@ -86,6 +86,7 @@ public class Config {
   public static final String TRACE_SAMPLE_RATE = "trace.sample.rate";
   public static final String TRACE_RATE_LIMIT = "trace.rate.limit";
   public static final String METHOD_TRACE_SAMPLE_RATE = "method.trace.sample.rate";
+  public static final String METHOD_TRACE_RECORDING_PATH = "method.trace.recording.path";
   public static final String TRACE_REPORT_HOSTNAME = "trace.report-hostname";
   public static final String HEADER_TAGS = "trace.header.tags";
   public static final String HTTP_SERVER_ERROR_STATUSES = "http.server.error.statuses";
@@ -319,6 +320,7 @@ public class Config {
   @Getter private final Double traceRateLimit;
 
   @Getter private final Double methodTraceSampleRate;
+  @Getter private final String methodTraceRecordingPath;
 
   @Getter private final boolean profilingEnabled;
   @Deprecated private final String profilingUrl;
@@ -485,6 +487,7 @@ public class Config {
     traceRateLimit = getDoubleSettingFromEnvironment(TRACE_RATE_LIMIT, DEFAULT_TRACE_RATE_LIMIT);
 
     methodTraceSampleRate = getDoubleSettingFromEnvironment(METHOD_TRACE_SAMPLE_RATE, null);
+    methodTraceRecordingPath = getSettingFromEnvironment(METHOD_TRACE_RECORDING_PATH, null);
 
     profilingEnabled =
         getBooleanSettingFromEnvironment(PROFILING_ENABLED, DEFAULT_PROFILING_ENABLED);
@@ -709,6 +712,8 @@ public class Config {
 
     methodTraceSampleRate =
         getPropertyDoubleValue(properties, METHOD_TRACE_SAMPLE_RATE, parent.methodTraceSampleRate);
+    methodTraceRecordingPath =
+        properties.getProperty(METHOD_TRACE_RECORDING_PATH, parent.methodTraceRecordingPath);
 
     profilingEnabled =
         getPropertyBooleanValue(properties, PROFILING_ENABLED, parent.profilingEnabled);

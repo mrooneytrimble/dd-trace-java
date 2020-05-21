@@ -5,5 +5,5 @@ import java.lang.management.ThreadInfo;
 public interface StackTraceSink {
   void write(String[] id, ThreadInfo[] threadInfos);
 
-  byte[] flush();
+  int flush();
 }

@@ -11,8 +11,10 @@ import datadog.trace.profiling.Session;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.HdrHistogram.Histogram;
 
+@Slf4j
 public abstract class TraceProfilingScopeManager extends ScopeInterceptor.DelegatingInterceptor {
   private static final long MAX_NANOSECONDS_BETWEEN_ACTIVATIONS = TimeUnit.SECONDS.toNanos(1);
   private static final double ACTIVATIONS_PER_SECOND = 5;
@@ -34,6 +36,7 @@ public abstract class TraceProfilingScopeManager extends ScopeInterceptor.Delega
       final Double methodTraceSampleRate,
       final TraceStatsCollector statsCollector,
       final ScopeInterceptor delegate) {
+    log.debug("Create a {} instance", TraceProfilingScopeManager.class.getName());
     if (methodTraceSampleRate != null) {
       return new Percentage(methodTraceSampleRate, delegate);
     }
@@ -63,12 +66,15 @@ public abstract class TraceProfilingScopeManager extends ScopeInterceptor.Delega
       super(delegate);
       assert 0 <= percent && percent <= 1;
       cutoff = new BigDecimal(percent).multiply(TRACE_ID_MAX_AS_BIG_DECIMAL).toBigInteger();
+      log.info("Percentage scope manager initialized with '{}' cutoff", cutoff);
     }
 
     @Override
     boolean shouldProfile(final AgentSpan span) {
       // Do we want to apply rate limiting?
-      return span.getTraceId().compareTo(cutoff) <= 0;
+      boolean result = span.getTraceId().compareTo(cutoff) <= 0;
+      log.info("Should profile {} = {}", span.getTraceId(), result);
+      return result;
     }
   }
 

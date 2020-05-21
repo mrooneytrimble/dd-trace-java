@@ -3,6 +3,7 @@ apply from: "${rootDir}/gradle/java.gradle"
 excludedClassesCoverage += [
   // These classes are using only for testing
   'com.datadog.profiling.testing.*',
+  'com.datadog.profiling.mlt.JMXSampler'
 ]
 
 dependencies {

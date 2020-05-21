@@ -18,7 +18,8 @@ public class ThreadStackAccess {
   /** Enable JMX based ThreadStack */
   public static void enableJmx() {
     try {
-      log.debug("Enabling JMX ThreadStack provider");
+      log.debug(
+          "Enabling JMX ThreadStack provider: CL={}", ThreadStackAccess.class.getClassLoader());
       /*
        * Can not use direct class reference to JmxThreadStackProvider since on some rare JVM implementations
        * using eager class resolution that class could be resolved at the moment when ThreadStacks are requested,
@@ -45,6 +46,8 @@ public class ThreadStackAccess {
    *     JMX provider is not available
    */
   public static ThreadStackProvider getCurrentThreadStackProvider() {
+    log.debug(
+        "Retrieving current ThreadStackProvider: CL={}", ThreadStackAccess.class.getClassLoader());
     return threadStackProvider;
   }
 }

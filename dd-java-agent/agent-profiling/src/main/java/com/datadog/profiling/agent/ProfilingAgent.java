@@ -10,6 +10,7 @@ import com.datadog.profiling.mlt.JMXSessionFactory;
 import com.datadog.profiling.uploader.RecordingUploader;
 import datadog.trace.api.Config;
 import datadog.trace.profiling.Profiler;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,8 @@ public class ProfilingAgent {
       try {
         final Controller controller = ControllerFactory.createController(config);
         // init the Profiler API for the Tracer
-        Profiler.initialize(new JMXSessionFactory(new JFRStackTraceSink()));
+        Profiler.initialize(
+            new JMXSessionFactory(new JFRStackTraceSink(config.getMethodTraceRecordingPath())));
         final RecordingUploader uploader = new RecordingUploader(config);
 
         final Duration startupDelay = Duration.ofSeconds(config.getProfilingStartDelay());
@@ -80,7 +82,7 @@ public class ProfilingAgent {
       } catch (final UnsupportedEnvironmentException e) {
         log.warn(e.getMessage());
         log.debug("", e);
-      } catch (final ConfigurationException e) {
+      } catch (final IOException | ConfigurationException e) {
         log.warn("Failed to initialize profiling agent! " + e.getMessage());
         log.debug("Failed to initialize profiling agent!", e);
       }

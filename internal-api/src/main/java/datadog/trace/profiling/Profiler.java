@@ -48,6 +48,7 @@ public class Profiler {
       log.warn("Profiling session not initialized");
       return NO_SESSION;
     }
+    log.info("Start profiling: {}, {}", id, thread.getName());
     return localFactory.createSession(id, thread);
   }
 

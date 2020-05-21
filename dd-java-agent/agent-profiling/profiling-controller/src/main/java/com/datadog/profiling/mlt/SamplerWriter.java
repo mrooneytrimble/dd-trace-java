@@ -11,11 +11,13 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicReference;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * TODO This is an example of how the {@linkplain Recording} can be used to write JMX generated
  * stacktraces.
  */
+@Slf4j
 public final class SamplerWriter {
   static final String CONTEXT_EVENT_NAME = "datadog.TraceContextEvent";
   static final String SAMPLER_EVENT_NAME = "datadog.SamplerEvent";
@@ -36,10 +38,11 @@ public final class SamplerWriter {
     return chunkWriter.getAndSet(recording.newChunk()).finish();
   }
 
-  public void dump(Path target) throws IOException {
+  public int dump(Path target) throws IOException {
     byte[] data = flush();
 
     Files.write(target, data);
+    return data.length;
   }
 
   public void writeContextEvent(SamplerContext context) {
@@ -60,6 +63,7 @@ public final class SamplerWriter {
 
   public void writeThreadSample(ThreadInfo threadInfo) {
     if (threadInfo.getStackTrace().length == 0) {
+      log.warn("Empty stacktrace for thread {}", threadInfo.getThreadName());
       return;
     }
 

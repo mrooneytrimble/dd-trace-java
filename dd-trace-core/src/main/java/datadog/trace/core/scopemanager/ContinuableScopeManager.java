@@ -58,6 +58,10 @@ public class ContinuableScopeManager extends ScopeInterceptor.DelegatingIntercep
                 methodTraceSampleRate,
                 traceStatsCollector,
                 new ListenerScopeInterceptor(scopeListeners, null))));
+    log.debug(
+        "Creating a new {} with method trace sample rate = {}",
+        ContinuableScopeManager.class.getName(),
+        methodTraceSampleRate);
     this.depthLimit = depthLimit;
     this.scopeListeners = scopeListeners;
   }

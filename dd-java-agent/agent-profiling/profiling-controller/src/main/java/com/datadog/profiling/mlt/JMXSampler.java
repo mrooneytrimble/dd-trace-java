@@ -21,7 +21,8 @@ class JMXSampler {
   private long samplingCount;
   private AtomicReference<long[]> threadIds = new AtomicReference<>();
 
-  public JMXSampler(StackTraceSink sink) {
+  JMXSampler(StackTraceSink sink) {
+    log.info("JMXSampler instance");
     this.sink = sink;
     provider = ThreadStackAccess.getCurrentThreadStackProvider();
     if (provider instanceof NoneThreadStackProvider) {
@@ -31,10 +32,10 @@ class JMXSampler {
     executor.scheduleAtFixedRate(this::sample, 0, 10, TimeUnit.MILLISECONDS);
   }
 
-  public void shutdown() {
+  void shutdown() {
     executor.shutdown();
-    byte[] buffer = sink.flush();
-    log.info("Flushing remaining {} bytes", buffer.length);
+    int bufferLength = sink.flush();
+    log.info("Flushing remaining {} bytes", bufferLength);
   }
 
   /**
@@ -43,7 +44,8 @@ class JMXSampler {
    *
    * @param threadId
    */
-  public void addThreadId(long threadId) {
+  void addThreadId(long threadId) {
+    log.info("add thread: {}", threadId);
     long[] tmpArray;
     long[] prev = threadIds.get();
     while (prev == null) {
@@ -60,7 +62,8 @@ class JMXSampler {
     } while (!threadIds.compareAndSet(prev, tmpArray));
   }
 
-  public void removeThread(long threadId) {
+  void removeThread(long threadId) {
+    log.info("remove thread: {}", threadId);
     long[] prev;
     long[] tmpArray;
     do {
@@ -70,7 +73,9 @@ class JMXSampler {
       }
       int idx = 0;
       int size = prev.length;
-      while (idx < size && prev[idx] != threadId) idx++;
+      while (idx < size && prev[idx] != threadId) {
+        idx++;
+      }
       if (idx >= size) {
         // not found
         return;
@@ -86,14 +91,16 @@ class JMXSampler {
     if (tmpArray == null || tmpArray.length == 0) {
       return;
     }
+    log.info("requesting info for {} threads", tmpArray.length);
     ThreadInfo[] threadInfos = provider.getThreadInfo(tmpArray);
+    log.info("received {} thread infos", threadInfos.length);
     // TODO handle ids
     sink.write(null, threadInfos);
     samplingCount++;
     // TODO flushing time as parameter
-    if (samplingCount % 100 == 0) {
-      byte[] buffer = sink.flush();
-      log.info("flushing {} bytes", buffer.length);
+    if (samplingCount % 1000 == 0) {
+      int bufferLength = sink.flush();
+      log.info("flushing {} bytes", bufferLength);
     }
   }
 }

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 public class JMXSamplerTest {
 
   @Test
-  public void sampler() throws InterruptedException {
+  public void sampler() throws Exception {
     ThreadStackAccess.enableJmx();
     StackTraceSink sink = new JFRStackTraceSink();
     JMXSampler sampler = new JMXSampler(sink);
@@ -17,20 +17,18 @@ public class JMXSamplerTest {
     sampler.removeThread(1);
     sampler.removeThread(Thread.currentThread().getId());
     sampler.shutdown();
-    byte[] buffer = sink.flush();
-    Assert.assertNotNull(buffer);
-    Assert.assertTrue(buffer.length > 0);
+    int bufferLength = sink.flush();
+    Assert.assertTrue(bufferLength > 0);
   }
 
   @Test
-  public void emptySampler() throws InterruptedException {
+  public void emptySampler() throws Exception {
     ThreadStackAccess.enableJmx();
     StackTraceSink sink = new JFRStackTraceSink();
     JMXSampler sampler = new JMXSampler(sink);
     Thread.sleep(100);
     sampler.shutdown();
-    byte[] buffer = sink.flush();
-    Assert.assertNotNull(buffer);
-    Assert.assertTrue(buffer.length > 0);
+    int bufferLength = sink.flush();
+    Assert.assertTrue(bufferLength > 0);
   }
 }

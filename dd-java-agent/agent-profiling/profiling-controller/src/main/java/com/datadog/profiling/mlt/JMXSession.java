@@ -13,6 +13,7 @@ public class JMXSession implements Session {
   private final AtomicInteger refCount = new AtomicInteger();
 
   public JMXSession(String id, long threadId, Consumer<JMXSession> cleanup) {
+    log.info("new JMXSession for id={}, threadId={}", id, threadId);
     this.id = id;
     this.threadId = threadId;
     this.cleanup = cleanup;

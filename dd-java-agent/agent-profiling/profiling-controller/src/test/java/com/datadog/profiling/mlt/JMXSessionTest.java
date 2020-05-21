@@ -43,7 +43,7 @@ public class JMXSessionTest {
   }
 
   @Test
-  public void createJFRSession() throws InterruptedException {
+  public void createJFRSession() throws Exception {
     ThreadStackAccess.enableJmx();
     Object lock = new Object();
     AtomicBoolean asserted = new AtomicBoolean();
@@ -52,9 +52,8 @@ public class JMXSessionTest {
     try (Session session = sessionFactory.createSession("id", Thread.currentThread())) {
       Thread.sleep(100);
     }
-    byte[] buffer = sink.flush();
-    Assert.assertNotNull(buffer);
-    Assert.assertTrue(buffer.length > 0);
+    int dataLength = sink.flush();
+    Assert.assertTrue(dataLength > 0);
   }
 
   private static class AssertStackTraceSink implements StackTraceSink {
@@ -76,8 +75,8 @@ public class JMXSessionTest {
     }
 
     @Override
-    public byte[] flush() {
-      return new byte[0];
+    public int flush() {
+      return 0;
     }
   }
 }
