@@ -2,7 +2,6 @@ package datadog.smoketest
 
 import com.datadog.profiling.testing.ProfilingTestUtils
 import com.google.common.collect.Multimap
-import net.jpountz.lz4.LZ4FrameInputStream
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
@@ -98,7 +97,7 @@ class ProfilingIntegrationMLTTest extends AbstractSmokeTest {
       println("Waiting for trace sample recordings to appear - max. 10 seconds")
       while (Files.list(mltRecordingsPath).count() == 0) {
         if (System.nanoTime() - ts > 10_000_000_000L) {
-          break;
+          break
         }
         Thread.sleep(200)
       }
